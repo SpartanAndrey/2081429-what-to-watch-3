@@ -1,0 +1,104 @@
+{
+  "api": {
+    "titles": [
+      "Inception",
+      "Green book",
+      "King Richard",
+      "Casino Royale",
+      "The Hateful Eight"
+    ],
+    "descriptions": [
+      "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O., but his tragic past may doom the project and his team to disaster.",
+      "A working-class Italian-American bouncer becomes the driver for an African-American classical pianist on a tour of venues through the 1960s American South.",
+      "A look at how tennis superstars Venus and Serena Williams became who they are after the coaching from their father Richard Williams.",
+      "After earning 00 status and a licence to kill, secret agent James Bond sets out on his first mission as 007.",
+      "In the dead of a Wyoming winter, a bounty hunter and his prisoner find shelter in a cabin currently inhabited by a collection of nefarious characters."
+    ],
+    "genres": [
+      "comedy", 
+      "crime", 
+      "documentary", 
+      "drama", 
+      "horror", 
+      "family", 
+      "romance", 
+      "scifi", 
+      "thriller"
+    ],
+    "previews": [
+      "https://www.imdb.com/video/vi2959588889/?playlistId=tt1375666&ref_=tt_ov_vi",
+      "https://www.imdb.com/video/vi824752921/?playlistId=tt6966692&ref_=tt_ov_vi",
+      "https://www.imdb.com/video/vi2139603737/?playlistId=tt9620288&ref_=tt_pr_ov_vi",
+      "https://www.imdb.com/video/vi1859520025/?playlistId=tt0381061&ref_=tt_ov_vi",
+      "https://www.imdb.com/video/vi2079306521/?playlistId=tt3460252&ref_=tt_ov_vi"
+    ],
+    "videos": [
+      "https://www.hulu.com/movie/inception-5519f425-9b21-48fb-8e67-aef24c76604a",
+      "https://okko.tv/movie/green-book",
+      "https://id42.lordfilm.codes/5634-kazino-royal.html",
+      "https://id42.lordfilm.codes/34529-korol-richard.html"
+    ],
+    "actors": [
+      "Leonardo DiCaprio",
+      "Joseph Gordon-Levitt", 
+      "Elliot Page",
+      "Tom Hardy",
+      "Viggo Mortensen",
+      "Mahershala Ali",
+      "Will Smith",
+      "Daniel Craig",
+      "Eva Green",
+      "Samuel L. Jackson"
+    ],
+    "directors": [
+      "Christopher Nolan",
+      "Peter Farrelly",
+      "Reinaldo Marcus Green",
+      "Martin Campbell",
+      "Quentin Tarantino"
+    ],
+    "names": [
+      "Spartan",
+      "General Kenobi",
+      "Aurora"
+    ],
+    "emails": [
+      "spartan@gmail.com",
+      "kenobi@gmail.com",
+      "aurora@gmail.com"
+    ],
+    "avatars": [
+      "https://img.freepik.com/premium-vector/spartan-mascot-logo-esport-design_142989-277.jpg",
+      "https://api.time.com/wp-content/uploads/2015/12/star-wars-episode-iii-revenge-of-the-sith-obi-wan.jpg",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCZfHy2kHKQr0Sypeh6ECMBmIRK_BicMnChA&usqp=CAU"
+    ],
+    "passwords": [
+      "2312Sparta",
+      "asd123Ssjnc",
+      "Aur231909"
+    ],
+    "posters": [
+      "https://m.media-amazon.com/images/M/MV5BMjExMjkwNTQ0Nl5BMl5BanBnXkFtZTcwNTY0OTk1Mw@@._V1_.jpg",
+      "https://m.media-amazon.com/images/I/81LBaKsMrsL._RI_.jpg",
+      "https://m.media-amazon.com/images/M/MV5BYTcyNmY4ZGEtYmE4Zi00ZDViLTlmYzMtMmQ4ZTM4OWNmZjQxXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg",
+      "https://m.media-amazon.com/images/M/MV5BYmI3MmMzMGMtNzc4Ni00YWQ4LWFkMDYtNjVlOWU3ZGZiNjY1XkEyXkFqcGdeQXVyNDQ2MTMzODA@._V1_.jpg",
+      "https://m.media-amazon.com/images/M/MV5BMjA1MTc1NTg5NV5BMl5BanBnXkFtZTgwOTM2MDEzNzE@._V1_FMjpg_UX1000_.jpg"
+    ],
+    "backgroundImages": [
+      "https://www.exberliner.com/wp-content/uploads/2022/01/Inception-Warner-Bros.jpg",
+      "https://media.vanityfair.com/photos/5c0ef38ef1a5a50e00b020ee/1:1/w_1332,h_1332,c_limit/Green-Book-Truth-Theme.jpg",
+      "https://lostfilm.info/images/photo/109/21155758_1085595.jpg",
+      "https://s5.afisha.ru/mediastorage/54/48/fcdc46c5732d455a89d0cbce4854.jpg",
+      "https://compote.slate.com/images/cdcf74ae-c30a-483a-b99c-7e888c4bf1f4.jpg"
+    ],
+    "backgroundColors": [
+      "#000000",
+      "#66CDAA",
+      "#F08080",
+      "#FF7F50",
+      "#B0C4DE",
+      "#DEB887",
+      "#A9A9A9"
+    ]
+  }
+}
