@@ -1,16 +1,20 @@
 import 'reflect-metadata';
 import {Container} from 'inversify';
 import Application from './app/application.js';
+import {applicationContainer} from './app/application.container.js';
 import {Component} from './types/component.type.js';
-import {ConfigInterface} from './common/config/config.interface.js';
-import ConfigService from './common/config/config.service.js';
-import {LoggerInterface} from './common/logger/logger.interface.js';
-import LoggerService from './common/logger/logger.service.js';
+import { movieContainer } from './modules/movie/movie.container.js';
+import {userContainer} from './modules/user/user.container.js';
 
-const applicationContainer = new Container();
-applicationContainer.bind<Application>(Component.Application).to(Application).inSingletonScope();
-applicationContainer.bind<LoggerInterface>(Component.LoggerInterface).to(LoggerService).inSingletonScope();
-applicationContainer.bind<ConfigInterface>(Component.ConfigInterface).to(ConfigService).inSingletonScope();
+const mainContainer = Container.merge(
+  applicationContainer,
+  movieContainer,
+  userContainer
+);
 
-const application = applicationContainer.get<Application>(Component.Application);
-await application.init();
+async function bootstrap() {
+  const application = mainContainer.get<Application>(Component.Application);
+  await application.init();
+}
+
+bootstrap();
