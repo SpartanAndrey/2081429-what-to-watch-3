@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import { Genre } from '../types/genre.enum.js';
 import { Movie } from '../types/movie.type.js';
 
 export const createMovie = (row: string) => {
@@ -11,7 +10,7 @@ export const createMovie = (row: string) => {
     title,
     description,
     postDate: new Date(postDate),
-    genre: Genre[genre as 'Comedy' | 'Crime' | 'Documentary' | 'Drama' | 'Horror' | 'Family' | 'Romance' | 'Scifi' | 'Thriller'],
+    genre,
     year: Number(year),
     rating: Number(rating),
     preview,
