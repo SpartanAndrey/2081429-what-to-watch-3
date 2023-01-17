@@ -1,0 +1,692 @@
+openapi: 3.1.0
+info:
+  title: API сервер для личного проекта «Что посмотреть».
+  description: |-
+    * Список ресурсов и маршрутов сервера «Что посмотреть».
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+
+tags:
+  - name: movies
+    description: Действия с фильмами.
+  - name: favorites
+    description: Действия с фильмами, добавленными в список «к просмотру».
+  - name: comments
+    description: Действия с комментариями.
+  - name: users
+    description: Действия с пользователями.
+
+paths:
+  /movies:
+    post:
+      tags:
+        - movies
+      summary: Добавление нового фильма
+      description: Возвращает фильм с идентификатором movieId в виде объекта.
+
+      requestBody:
+        description: Объект с новым фильмом.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/newMovie'
+        required: true
+
+      responses:
+        "201":
+          description: Фильм добавлен.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'
+
+        "400":
+          description: Ошибка тела запроса.
+        
+        "401":
+          description: Пользователь не авторизован.
+
+    get:
+      tags:
+        - movies
+      summary: Получение списка фильмов
+      description: Возвращает массив фильмов. Каждый фильм описан в виде объекта.
+
+      responses:
+        "200":
+          description: Массив фильмов.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movies'
+
+  /movies/{movieId}:
+    post:
+      tags:
+        - movies
+      summary: Редактирование информации по фильму
+      description: Возвращает изменённую детальную информацию по фильму с идентификатором movieId в виде объекта.
+
+      requestBody:
+        description: Объект с изменённой информацией по фильму.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/movie'
+        required: true
+
+      responses:
+        "201":
+          description: Фильм изменён.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'
+
+        "400":
+          description: Ошибка тела запроса.
+        
+        "401":
+          description: Пользователь не авторизован.
+
+    get:
+      tags:
+        - movies
+      summary: Получение информации по фильму
+      description: Возвращает детальную информацию по фильму с идентификатором movieId в виде объекта.
+
+      responses:
+        "200":
+          description: Объект фильма.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'    
+
+        "404":
+          description: Фильм не найден.
+
+    delete:
+      tags:
+        - movies
+      summary: Удаление фильма
+      description: Удаляет фильм с идентификатором movieId.
+
+      responses:
+        "200":
+          description: Фильм удалён.    
+
+        "401":
+          description: Пользователь не авторизован.
+  
+  /movies/genre:
+    get:
+      tags:
+        - movies
+      summary: Получение списка фильмов определённого жанра
+      description: Возвращает массив фильмов. Каждый фильм описан в виде объекта.
+  
+      responses:
+        "200":
+          description: Массив фильмов.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movies'  
+
+  /promo:
+    get:
+      tags:
+        - movies
+      summary: Получение промо-фильма
+      description: Возвращает фильм в виде объекта.
+    
+      responses:
+        "200":
+          description: Объект фильма.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'     
+
+  /favorites/{movieId}/{status}:
+    post:
+      tags:
+        - movies
+      summary: Добавление нового фильма
+      description: Возвращает фильм с идентификатором movieId с актуальным состоянием поля isFavorite в виде объекта.
+
+      parameters:
+        - name: movieId
+          in: path
+          description: Уникальный идентификатор фильма
+          required: true
+          schema:
+            type: number
+            example: 1
+
+        - name: status
+          in: path
+          description: Статус фильма. Может быть 1 или 0, где 1 добавляет фильма в список «к просмотру», а 0 удаляет
+          required: true
+          schema:
+            type: number
+            example: 1
+    
+      responses:
+        "200":
+          description: Объект фильма.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/movie"
+
+        "401":
+          description: Пользователь не авторизован. 
+
+  /favorites:
+    get:
+      tags:
+        - movies
+      summary: Получение списка фильмов «к просмотру»
+      description: Возвращает массив фильмов, добавленных в список «к просмотру». Каждый фильм описан в виде объекта.
+
+      responses:
+        "200":
+          description: Массив фильмов, добавленных в список «к просмотру».
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/movies"
+
+        "401":
+          description: Пользователь не авторизован.
+  
+  /comments/{movieId}:
+    post:
+      tags:
+        - movies
+      summary: Добавление комментария
+      description: Добавляет новый комментарий для фильма с идентификатором movieId.
+
+      parameters:
+        - name: movieId
+          in: path
+          description: Уникальный идентификатор фильма
+          required: true
+          schema:
+            type: number
+            example: 1
+
+      requestBody:
+        description: Объект с новым комментарием.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/newComment'
+        required: true
+
+      responses:
+        "201":
+          description: Фильм изменён.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comments'
+
+        "400":
+          description: Ошибка тела запроса.
+        
+        "401":
+          description: Пользователь не авторизован.
+
+    get:
+      tags:
+        - movies
+      summary: Получение списка комментариев
+      description: Возвращает список комментариев для фильма с идентификатором movieId. Каждый комментарий описан в виде объекта.
+    
+      responses:
+        "200":
+          description: Массив комментариев. 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/comments"
+
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: Регистрация пользователя
+      description: Регистрирует нового пользователя.
+
+      requestBody:
+        description: Информация для создания нового пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/newUser'
+        required: true
+
+      responses:
+        "201":
+          description: Пользователь зарегистрирован. Объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+
+        "409":
+          description: Пользователь с таким email уже существует.
+
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Авторизация пользователя
+      description: Авторизует пользователя на основе логина и пароля.
+
+      requestBody:
+        description: Объект, содержащий логин и пароль пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/login"
+        required: true
+
+      responses:
+        "200":
+          description: Статус авторизации.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/authorizedUser"
+
+        "400":
+          description: Ошибка тела запроса.
+
+        "404":
+          description: Пользователь не найден.
+
+    get:
+      tags:
+        - users
+      summary: Проверка состояния пользователя
+      description: Возвращает информацию по авторизованному пользователю.
+
+      responses:
+        "200":
+          description: Статус авторизации пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/authorizedUser"
+
+        "401":
+          description: Пользователь не авторизован.
+
+  /users/{userId}/avatar:
+    post:
+      tags:
+        - users
+      summary: Загрузить изображение аватара
+      description: Загружает изображение аватара пользователя. Изображение аватара должно быть в формате `png` или `jpg`.
+    
+      parameters:
+        - name: userId
+          in: path
+          description: Уникальный идентификатор пользователя
+          required: true
+          schema:
+            type: number
+            example: 1
+
+      responses:
+        "201":
+          description: Пользователь изменен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/authorizedUser"
+
+        "400":
+          description: Ошибка тела запроса.
+
+  /users/logout:
+    delete:
+      tags:
+        - users
+      summary: Завершить сеанс пользователя
+      description: Завершает сеанс работы — выход из закрытой части приложения.
+
+      responses:
+        "204":
+          description: Сеанс завершён.
+
+components:
+  schemas:
+    newMovie:
+      type: object
+
+      properties:
+        title:
+          type: string
+          example: Inception
+
+        description:
+          type: string
+          example: A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O., but his tragic past may doom the project and his team to disaster.
+        
+        genre:
+          type: string
+          example: Crime
+
+        year:
+          type: number
+          example: 2010
+
+        preview:
+          type: string
+          example: https://www.imdb.com/video/vi2959588889/?playlistId=tt1375666&ref_=tt_ov_vi
+
+        video:
+          type: string
+          example: https://www.hulu.com/movie/inception-5519f425-9b21-48fb-8e67-aef24c76604a
+
+        actors:
+          type: array
+          items:
+            type: string
+            example: Leonardo DiCaprio
+
+        director:
+          type: string
+          example: Christopher Nolan
+
+        duration:
+          type: number
+          example: 140
+
+        userId:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
+
+        poster:
+          type: string
+          example: https://m.media-amazon.com/images/M/MV5BMjExMjkwNTQ0Nl5BMl5BanBnXkFtZTcwNTY0OTk1Mw@@._V1_.jpg
+
+        backgroundImage:
+          type: string
+          example: https://www.exberliner.com/wp-content/uploads/2022/01/Inception-Warner-Bros.jpg
+
+        backgroundColor:
+          type: string
+          example: '#000000'
+
+    movie:
+      type: object
+
+      properties:
+        title:
+          type: string
+          example: Inception
+
+        description:
+          type: string
+          example: A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O., but his tragic past may doom the project and his team to disaster.
+        
+        postDate:
+          type: string
+          format: date-time
+          example: 2023-01-17T21:26:40.283Z
+        
+        genre:
+          type: string
+          example: Crime
+
+        year:
+          type: number
+          example: 2010
+
+        rating:
+          type: number
+          example: 4.5
+
+        preview:
+          type: string
+          example: https://www.imdb.com/video/vi2959588889/?playlistId=tt1375666&ref_=tt_ov_vi
+
+        video:
+          type: string
+          example: https://www.hulu.com/movie/inception-5519f425-9b21-48fb-8e67-aef24c76604a
+
+        actors:
+          type: array
+          items:
+            type: string
+            example: Leonardo DiCaprio
+
+        director:
+          type: string
+          example: Christopher Nolan
+
+        duration:
+          type: number
+          example: 140
+
+        comments:
+          type: number
+          example: 50
+
+        userId:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
+
+        poster:
+          type: string
+          example: https://m.media-amazon.com/images/M/MV5BMjExMjkwNTQ0Nl5BMl5BanBnXkFtZTcwNTY0OTk1Mw@@._V1_.jpg
+
+        backgroundImage:
+          type: string
+          example: https://www.exberliner.com/wp-content/uploads/2022/01/Inception-Warner-Bros.jpg
+
+        backgroundColor:
+          type: string
+          example: '#000000'
+    
+    movies:
+      type: array
+
+      items: 
+        type: object
+
+        properties:
+          title:
+            type: string
+            example: Inception
+
+          description:
+            type: string
+            example: A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O., but his tragic past may doom the project and his team to disaster.
+        
+          postDate:
+            type: string
+            format: date-time
+            example: 2023-01-17T21:26:40.283Z
+        
+          genre:
+            type: string
+            example: Crime
+
+          year:
+            type: number
+            example: 2010
+
+          rating:
+            type: number
+            example: 4.5
+
+          preview:
+            type: string
+            example: https://www.imdb.com/video/vi2959588889/?playlistId=tt1375666&ref_=tt_ov_vi
+
+          video:
+            type: string
+            example: https://www.hulu.com/movie/inception-5519f425-9b21-48fb-8e67-aef24c76604a
+
+          actors:
+            type: array
+            items:
+              type: string
+              example: Leonardo DiCaprio
+
+          director:
+            type: string
+            example: Christopher Nolan
+
+          duration:
+            type: number
+            example: 140
+
+          comments:
+            type: number
+            example: 50
+
+          userId:
+            type: string
+            example: 6329c3d6a04ab1061c6425ea
+
+          poster:
+            type: string
+            example: https://m.media-amazon.com/images/M/MV5BMjExMjkwNTQ0Nl5BMl5BanBnXkFtZTcwNTY0OTk1Mw@@._V1_.jpg
+
+          backgroundImage:
+            type: string
+            example: https://www.exberliner.com/wp-content/uploads/2022/01/Inception-Warner-Bros.jpg
+
+          backgroundColor:
+            type: string
+            example: '#000000'
+
+    
+    newComment:
+      type: object
+
+      properties:
+        comment:
+          type: string
+          example: It's amazing.
+
+        rating:
+          type: number
+          example: 6
+        
+        postDate:
+          type: string
+          format: date-time
+          example: 2023-01-17T21:26:40.283Z
+
+        userId:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea    
+    
+    
+    comments:
+      type: array
+
+      items: 
+        type: object
+
+        properties:
+          comment:
+            type: string
+            example: It's amazing.
+
+          rating:
+            type: number
+            example: 6
+        
+          postDate:
+            type: string
+            format: date-time
+            example: 2023-01-17T21:26:40.283Z
+
+          userId:
+            type: string
+            example: 6329c3d6a04ab1061c6425ea 
+
+    newUser:
+      type: object
+
+      properties:
+        firstname:
+          type: string
+          example: Spartan
+        
+        email:
+          type: string
+          example: spartan@gmail.com
+
+        password:
+          type: string
+          example: 2312Sparta
+
+    user:
+      type: object
+
+      properties:
+        firstname:
+          type: string
+          example: Spartan
+        
+        email:
+          type: string
+          example: spartan@gmail.com
+
+        password:
+          type: string
+          example: 2312Sparta
+        
+        avatar:
+          type: string
+          example: https://img.freepik.com/premium-vector/spartan-mascot-logo-esport-design_142989-277.jpg
+    
+    login:
+      type: object
+
+      properties:
+        email:
+          type: string
+          example: spartan@gmail.com
+
+        password:
+          type: string
+          example: 2312Sparta
+
+    authorizedUser:
+      type: object
+
+      properties:
+        firstname:
+          type: string
+          example: Spartan
+        
+        email:
+          type: string
+          example: spartan@gmail.com
+
+        password:
+          type: string
+          example: 2312Sparta
+        
+        avatar:
+          type: string
+          example: https://img.freepik.com/premium-vector/spartan-mascot-logo-esport-design_142989-277.jpg
+        
+        token:
+          type: string
+          example: T2xpdmVyLmNvbm5lckBnbWFpbC5jb20=
+        
