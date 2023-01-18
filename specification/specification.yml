@@ -54,6 +54,14 @@ paths:
       summary: Получение списка фильмов
       description: Возвращает массив фильмов. Каждый фильм описан в виде объекта.
 
+      parameters:
+        - name: quantity
+          in: query
+          description: Количество фильмов, которые возвращает сервис.
+          schema:
+            type: number
+            example: 60
+
       responses:
         "200":
           description: Массив фильмов.
@@ -74,7 +82,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/movie'
+              $ref: '#/components/schemas/editedMovie'
         required: true
 
       responses:
@@ -90,6 +98,9 @@ paths:
         
         "401":
           description: Пользователь не авторизован.
+        
+        "403":
+          description: Нет доступа.
 
     get:
       tags:
@@ -120,6 +131,9 @@ paths:
 
         "401":
           description: Пользователь не авторизован.
+
+        "403":
+          description: Нет доступа.
   
   /movies/genre:
     get:
@@ -219,6 +233,13 @@ paths:
           schema:
             type: number
             example: 1
+
+        - name: quantity
+          in: query
+          description: Количество последних комментариев, которые возвращает сервис.
+          schema:
+            type: number
+            example: 50
 
       requestBody:
         description: Объект с новым комментарием.
@@ -426,6 +447,68 @@ components:
           type: string
           example: '#000000'
 
+    editedMovie:
+      type: object
+
+      properties:
+        title:
+          type: string
+          example: Inception
+
+        description:
+          type: string
+          example: A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O., but his tragic past may doom the project and his team to disaster.
+        
+        genre:
+          type: string
+          example: Crime
+
+        year:
+          type: number
+          example: 2010
+
+        preview:
+          type: string
+          example: https://www.imdb.com/video/vi2959588889/?playlistId=tt1375666&ref_=tt_ov_vi
+
+        video:
+          type: string
+          example: https://www.hulu.com/movie/inception-5519f425-9b21-48fb-8e67-aef24c76604a
+
+        actors:
+          type: array
+          items:
+            type: string
+            example: Leonardo DiCaprio
+
+        director:
+          type: string
+          example: Christopher Nolan
+
+        duration:
+          type: number
+          example: 140
+
+        userId:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
+
+        poster:
+          type: string
+          example: https://m.media-amazon.com/images/M/MV5BMjExMjkwNTQ0Nl5BMl5BanBnXkFtZTcwNTY0OTk1Mw@@._V1_.jpg
+
+        backgroundImage:
+          type: string
+          example: https://www.exberliner.com/wp-content/uploads/2022/01/Inception-Warner-Bros.jpg
+
+        backgroundColor:
+          type: string
+          example: '#000000'
+        
+        filmId:
+          type: number
+          example: 123
+
     movie:
       type: object
 
@@ -508,10 +591,6 @@ components:
             type: string
             example: Inception
 
-          description:
-            type: string
-            example: A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O., but his tragic past may doom the project and his team to disaster.
-        
           postDate:
             type: string
             format: date-time
@@ -521,35 +600,9 @@ components:
             type: string
             example: Crime
 
-          year:
-            type: number
-            example: 2010
-
-          rating:
-            type: number
-            example: 4.5
-
           preview:
             type: string
             example: https://www.imdb.com/video/vi2959588889/?playlistId=tt1375666&ref_=tt_ov_vi
-
-          video:
-            type: string
-            example: https://www.hulu.com/movie/inception-5519f425-9b21-48fb-8e67-aef24c76604a
-
-          actors:
-            type: array
-            items:
-              type: string
-              example: Leonardo DiCaprio
-
-          director:
-            type: string
-            example: Christopher Nolan
-
-          duration:
-            type: number
-            example: 140
 
           comments:
             type: number
@@ -562,16 +615,7 @@ components:
           poster:
             type: string
             example: https://m.media-amazon.com/images/M/MV5BMjExMjkwNTQ0Nl5BMl5BanBnXkFtZTcwNTY0OTk1Mw@@._V1_.jpg
-
-          backgroundImage:
-            type: string
-            example: https://www.exberliner.com/wp-content/uploads/2022/01/Inception-Warner-Bros.jpg
-
-          backgroundColor:
-            type: string
-            example: '#000000'
-
-    
+  
     newComment:
       type: object
 
