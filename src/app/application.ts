@@ -4,6 +4,8 @@ import {LoggerInterface} from '../common/logger/logger.interface.js';
 import {Component} from '../types/component.type.js';
 import {getURI} from '../utils/db.js';
 import {DatabaseInterface} from '../common/database-client/database.interface.js';
+//import { MovieServiceInterface } from '../modules/movie/movie-service.interface.js';
+import { UserServiceInterface } from '../modules/user/user-service.interface.js';
 
 @injectable()
 export default class Application {
@@ -11,7 +13,9 @@ export default class Application {
   constructor(
     @inject(Component.LoggerInterface) private logger: LoggerInterface,
     @inject(Component.ConfigInterface) private config: ConfigInterface,
-    @inject(Component.DatabaseInterface) private databaseClient: DatabaseInterface
+    @inject(Component.DatabaseInterface) private databaseClient: DatabaseInterface,
+    //@inject(Component.MovieServiceInterface) private movieService: MovieServiceInterface,
+    @inject(Component.UserServiceInterface) private userService: UserServiceInterface
   ){}
 
   public async init() {
@@ -27,5 +31,9 @@ export default class Application {
     );
 
     await this.databaseClient.connect(uri);
+
+    //const testFunc = await this.movieService.findFavorites('63c29007cdb71a70b34f9f28');
+    const testFunc2 = await this.userService.findFavorites('63c29007cdb71a70b34f9f28');
+    console.log(testFunc2);
   }
 }
