@@ -46,18 +46,61 @@ export default class UserService implements UserServiceInterface {
     return this.userModel
       .aggregate([
         {
+          $unwind: '$favorites'
+        },
+        {
           $match: { '_id': new mongoose.Types.ObjectId(userId) },
         },
         {
           $lookup: {
             from: 'movies',
-            let: { favorites: '$favorites'},
-            pipeline: [
-              { $match: { $expr: { $in: ['$_id', '$$favorites'] } } },
-            ],
-            as: 'movies'
+            localField: 'favorites',
+            foreignField: '_id',
+            as: 'movie'
           },
         },
+        {
+          $unwind: '$movie'
+        },
+        {
+          $addFields: {
+            title: '$movie.title',
+            postDate: '$movie.postDate',
+            genre: '$movie.genre',
+            preview: '$movie.previews',
+            user: '$movie.userId',
+            poster: '$movie.poster',
+            comments: '$movie.comments'
+          }
+        },
+        {
+          $project: {'_id': 0, 'name': 0, 'email': 0, 'avatar': 0, 'password': 0, 'createdAt': 0, 'updatedAt': 0, 'favorites': 0, 'movie': 0}
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user',
+            foreignField: '_id',
+            as: 'user',
+          },
+        },
+        {
+          $unwind: '$user'
+        },
       ]);
+  }
+
+  public async addFavorite(userId: string, movieId: string): Promise<void | null> {
+    return this.userModel.findByIdAndUpdate(userId,
+      {
+        $push: {favorites: movieId}
+      });
+  }
+
+  public async removeFavorite(userId: string, movieId: string): Promise<void | null> {
+    return this.userModel.findByIdAndUpdate(userId,
+      {
+        $pull: {favorites: movieId}
+      });
   }
 }
