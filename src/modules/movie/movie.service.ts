@@ -115,20 +115,6 @@ export default class MovieService implements MovieServiceInterface {
       ]);
   }
 
-  public async findFavorites(): Promise<DocumentType<MovieEntity>[] | null> { //WIP
-    return this.movieModel
-      .find()
-      .populate(['userId'])
-      .exec();
-  }
-
-  public async editFavorite(movieId: string): Promise<DocumentType<MovieEntity> | null> { //WIP
-    return this.movieModel
-      .findById(movieId)
-      .populate(['userId'])
-      .exec();
-  }
-
   public async incCommentCount(movieId: string): Promise<DocumentType<MovieEntity> | null> {
     return this.movieModel
       .findByIdAndUpdate(movieId, {'$inc': {
