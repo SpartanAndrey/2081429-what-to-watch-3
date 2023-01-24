@@ -62,6 +62,7 @@ export class MovieEntity extends defaultClasses.TimeStamps {
 
   @prop({required: true})
   public backgroundColor!: string;
+
 }
 
 export const MovieModel = getModelForClass(MovieEntity);

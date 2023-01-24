@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema({
     minlength: [6, 'Min length for password is 6'],
     maxlength: [12, 'Max length for password is 12'],
   },
+  favorites: [String],
 }, {
   timestamps: true,
 });
