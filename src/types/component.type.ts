@@ -7,6 +7,9 @@ export const Component = {
   UserModel: Symbol.for('UserModel'),
   MovieServiceInterface: Symbol.for('MovieServiceInterface'),
   MovieModel: Symbol.for('MovieModel'),
+  MovieController: Symbol.for('MovieController'),
   CommentServiceInterface: Symbol.for('CommentServiceInterface'),
   CommentModel: Symbol.for('CommentModel'),
+  ExceptionFilterInterface: Symbol.for('ExceptionFilterInterface'),
+  UserController: Symbol.for('UserController')
 } as const;
