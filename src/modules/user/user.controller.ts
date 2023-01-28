@@ -84,15 +84,17 @@ export default class UserController extends Controller {
 
   public async addFavorite({body, params}: Request, res: Response): Promise<void> {
     await this.userService.addFavorite(params.userId, body.movieId);
-    this.noContent(
+    this.ok(
       res,
+      []
     );
   }
 
   public async removeFavorite({body, params}: Request, res: Response): Promise<void> {
     await this.userService.removeFavorite(params.userId, body.movieId);
-    this.noContent(
+    this.ok(
       res,
+      []
     );
   }
 }

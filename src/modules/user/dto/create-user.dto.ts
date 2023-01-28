@@ -3,5 +3,4 @@ export default class CreateUserDto {
   public email!: string;
   public avatar!: string;
   public password!: string;
-  public favorites!: string;
 }

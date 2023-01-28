@@ -9,7 +9,9 @@ import MovieResponse from './response/movie.response.js';
 import { fillDTO } from '../../utils/common.js';
 import CreateMovieDto from './dto/create-movie.dto.js';
 import { StatusCodes } from 'http-status-codes';
-//import { StatusCodes } from 'http-status-codes';
+import MovieCardResponse from './response/movie-card.response.js';
+import HttpError from '../../common/errors/http-error.js';
+import { RequestQuery } from '../../types/request-query.type.js';
 
 @injectable()
 export default class MovieController extends Controller {
@@ -23,18 +25,34 @@ export default class MovieController extends Controller {
 
     this.addRoute({path: '/', method: HttpMethod.Get, handler: this.index});
     this.addRoute({path: '/', method: HttpMethod.Post, handler: this.create});
+    this.addRoute({path: '/promo', method: HttpMethod.Get, handler: this.getPromo});
     this.addRoute({path: '/:movieId', method: HttpMethod.Get, handler: this.getMovie});
     this.addRoute({path: '/:movieId', method: HttpMethod.Post, handler: this.updateMovie});
     this.addRoute({path: '/:movieId', method: HttpMethod.Delete, handler: this.deleteMovie});
-    this.addRoute({path: '/genres/:genre', method: HttpMethod.Get, handler: this.getByGenre});
-    this.addRoute({path: '/promo', method: HttpMethod.Get, handler: this.getPromo});
   }
 
-  public async index(_req: Request, res: Response): Promise<void> {
-    const result = await this.movieService.find();
-    const movieResponse = fillDTO(MovieResponse, result);
+  public async index({query}: Request<unknown, unknown, unknown, RequestQuery>, res: Response): Promise<void> {
+
+    const limit = query.limit ? parseInt(query.limit, 10) : undefined;
+    const selectedGenre = query.genre;
+
+    if (!selectedGenre) {
+      const result = await this.movieService.find(limit);
+      this.ok(
+        res, fillDTO(MovieResponse, result)
+      );
+    } else {
+      const result = await this.movieService.findByGenre(selectedGenre, limit);
+      this.ok(
+        res, fillDTO(MovieResponse, result)
+      );
+    }
+  }
+
+  public async getPromo(_req: Request, res: Response): Promise<void> { //WIP
+    const result = await this.movieService.findPromo();
     this.ok(
-      res, movieResponse
+      res, fillDTO(MovieCardResponse, result)
     );
   }
 
@@ -43,45 +61,61 @@ export default class MovieController extends Controller {
     this.send(
       res,
       StatusCodes.CREATED,
-      fillDTO(MovieResponse, result)
+      fillDTO(MovieCardResponse, result)
     );
   }
 
   public async getMovie({params}: Request, res: Response): Promise<void> {
     const result = await this.movieService.findById(params.movieId);
+
+    if (!result) {
+      throw new HttpError(
+        StatusCodes.NOT_FOUND,
+        'Movie does not exist.',
+        'MovieController'
+      );
+    }
+
     this.ok(
       res,
-      fillDTO(MovieResponse, result)
+      fillDTO(MovieCardResponse, result)
     );
   }
 
   public async updateMovie({body, params}: Request, res: Response): Promise<void> {
+
+    const existsMovie = await this.movieService.findById(params.movieId);
+
+    if (!existsMovie) {
+      throw new HttpError(
+        StatusCodes.NOT_FOUND,
+        'Movie does not exist.',
+        'MovieController'
+      );
+    }
+
     const result = await this.movieService.editById(params.movieId, body);
     this.created(
       res,
-      fillDTO(MovieResponse, result)
+      fillDTO(MovieCardResponse, result)
     );
   }
 
   public async deleteMovie({params}: Request, res: Response): Promise<void> {
+
+    const existsMovie = await this.movieService.findById(params.movieId);
+
+    if (!existsMovie) {
+      throw new HttpError(
+        StatusCodes.NOT_FOUND,
+        'Movie does not exist.',
+        'MovieController'
+      );
+    }
+
     await this.movieService.deleteById(params.movieId);
     this.noContent(
       res
-    );
-  }
-
-  public async getByGenre({params}: Request, res: Response): Promise<void> {
-    const result = await this.movieService.findByGenre(params.genre);
-    this.ok(
-      res,
-      fillDTO(MovieResponse, result)
-    );
-  }
-
-  public async getPromo(_req: Request, res: Response): Promise<void> { //WIP
-    const result = await this.movieService.findPromo();
-    this.ok(
-      res, fillDTO(MovieResponse, result)
     );
   }
 }

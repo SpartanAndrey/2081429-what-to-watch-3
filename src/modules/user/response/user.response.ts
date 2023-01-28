@@ -10,4 +10,7 @@ export default class UserResponse {
   @Expose()
   public avatar!: string;
 
+  @Expose()
+  public favorites!: [];
+
 }
