@@ -53,9 +53,6 @@ export default class MovieService implements MovieServiceInterface {
         {
           $unwind: '$user'
         },
-        {
-          $unset: 'user._id'
-        },
       ]);
   }
 

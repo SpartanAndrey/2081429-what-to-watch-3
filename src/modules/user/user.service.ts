@@ -93,14 +93,14 @@ export default class UserService implements UserServiceInterface {
   public async addFavorite(userId: string, movieId: string): Promise<void | null> {
     return this.userModel.findByIdAndUpdate(userId,
       {
-        $push: {favorites: movieId}
+        $push: {favorites: new mongoose.Types.ObjectId(movieId)}
       });
   }
 
   public async removeFavorite(userId: string, movieId: string): Promise<void | null> {
     return this.userModel.findByIdAndUpdate(userId,
       {
-        $pull: {favorites: movieId}
+        $pull: {favorites: new mongoose.Types.ObjectId(movieId)}
       });
   }
 }
