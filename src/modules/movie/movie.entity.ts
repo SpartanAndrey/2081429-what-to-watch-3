@@ -27,7 +27,7 @@ export class MovieEntity extends defaultClasses.TimeStamps {
   @prop({required: true})
   public year!: number;
 
-  @prop({default: 0})
+  @prop({default: 0, required: true})
   public rating!: number;
 
   @prop({required: true})

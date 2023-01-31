@@ -48,11 +48,11 @@ Content-Type: application/json
 
 ## Редактировать информацию по фильму
 
-POST http://localhost:5000/movies/63c29007cdb71a70b34f9f36 HTTP/1.1
+PATCH  http://localhost:5000/movies/63c29007cdb71a70b34f9f44 HTTP/1.1
 Content-Type: application/json
 
 {
-  "title": "New title"
+  "genre": "Comedy"
 }
 
 ###
@@ -63,17 +63,30 @@ DELETE http://localhost:5000/movies/63d2b350ed9d204b6baa88c2 HTTP/1.1
 
 ###
 
-## Получить список фильмов определенного жанра
-
-GET http://localhost:5000/movies/genres/Romance HTTP/1.1
-Content-Type: application/json
-
-###
-
 ## Получить промо фильм
 
 GET http://localhost:5000/movies/promo HTTP/1.1
 Content-Type: application/json
+
+###
+
+## Получить комментарии к фильму
+
+GET http://localhost:5000/movies/63c29007cdb71a70b34f9f2b/comments HTTP/1.1
+Content-Type: application/json
+
+###
+
+## Создать комментарий к фильму
+POST http://localhost:5000/comments HTTP/1.1
+Content-Type: application/json
+
+{
+  "rating": 5,
+  "text": "Фильм в стиле Александра Невского, никому не советую",
+  "movieId": "63c29007cdb71a70b34f9f2b",
+  "userId": "63d1779019408410419c3025"
+}
 
 ###
 
