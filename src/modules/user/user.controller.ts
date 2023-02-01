@@ -14,6 +14,9 @@ import {ConfigInterface} from '../../common/config/config.interface.js';
 import LoginUserDto from './dto/login-user.dto.js';
 import MovieResponse from '../movie/response/movie.response.js';
 import {ValidateDtoMiddleware} from '../../common/middlewares/validate-dto.middleware.js';
+import {ValidateObjectIdMiddleware} from '../../common/middlewares/validate-objectid.middleware.js';
+import {UploadFileMiddleware} from '../../common/middlewares/upload-file.middleware.js';
+import {DocumentExistsMiddleware} from '../../common/middlewares/document-exists.middleware.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -40,12 +43,19 @@ export default class UserController extends Controller {
     this.addRoute({path: '/favorites/:userId', method: HttpMethod.Get, handler: this.getFavorites});
     this.addRoute({path: '/favorites/:userId', method: HttpMethod.Post, handler: this.addFavorite});
     this.addRoute({path: '/favorites/:userId', method: HttpMethod.Delete, handler: this.removeFavorite});
+    this.addRoute({
+      path: '/:userId/avatar',
+      method: HttpMethod.Post,
+      handler: this.uploadAvatar,
+      middlewares: [
+        new ValidateObjectIdMiddleware('userId'),
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
+        new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
+      ]
+    });
   }
 
-  public async create(
-    {body}: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDto>,
-    res: Response,
-  ): Promise<void> {
+  public async create({body}: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDto>, res: Response): Promise<void> {
     const existsUser = await this.userService.findByEmail(body.email);
 
     if (existsUser) {
@@ -65,9 +75,7 @@ export default class UserController extends Controller {
   }
 
   public async login(
-    {body}: Request<Record<string, unknown>, Record<string, unknown>, LoginUserDto>,
-    /*_res: Response,*/
-  ): Promise<void> {
+    {body}: Request<Record<string, unknown>, Record<string, unknown>, LoginUserDto>, _res: Response): Promise<void> {
     const existsUser = await this.userService.findByEmail(body.email);
 
     if (!existsUser) {
@@ -107,5 +115,11 @@ export default class UserController extends Controller {
       res,
       []
     );
+  }
+
+  public async uploadAvatar(req: Request, res: Response) {
+    this.created(res, {
+      filepath: req.file?.path
+    });
   }
 }

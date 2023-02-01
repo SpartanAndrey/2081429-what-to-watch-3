@@ -118,6 +118,7 @@ DB_USER=admin - имя пользователя
 DB_PASSWORD=test - пароль пользователя
 DB_PORT=27017 - порт сервера базы данных
 DB_NAME=course-nodejs - название базы данных
+UPLOAD_DIRECTORY=upload - путь к директории с файлами от клиентов
 
 ### Остальное
 

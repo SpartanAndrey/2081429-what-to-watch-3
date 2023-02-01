@@ -123,5 +123,4 @@ export default class MovieService implements MovieServiceInterface {
     return (await this.movieModel
       .exists({_id: movieId})) !== null;
   }
-
 }

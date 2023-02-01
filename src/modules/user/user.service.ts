@@ -103,4 +103,9 @@ export default class UserService implements UserServiceInterface {
         $pull: {favorites: new mongoose.Types.ObjectId(movieId)}
       });
   }
+
+  public async exists(userId: string): Promise<boolean> {
+    return (await this.userModel
+      .exists({_id: userId})) !== null;
+  }
 }
