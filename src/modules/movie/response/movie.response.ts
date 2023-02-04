@@ -2,7 +2,7 @@ import {Expose, Type} from 'class-transformer';
 import UserResponse from '../../user/response/user.response.js';
 
 export default class MovieResponse {
-  @Expose()
+  @Expose({name: '_id'})
   public id!: string;
 
   @Expose()
@@ -20,7 +20,7 @@ export default class MovieResponse {
   @Expose()
   public comments!: number;
 
-  @Expose({ name: 'userId'})
+  @Expose()
   @Type(() => UserResponse)
   public user!: UserResponse;
 

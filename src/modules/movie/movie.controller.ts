@@ -17,6 +17,7 @@ import { RequestQuery } from '../../types/request-query.type.js';
 import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
 import {DocumentExistsMiddleware} from '../../common/middlewares/document-exists.middleware.js';
+import {PrivateRouteMiddleware} from '../../common/middlewares/private-route.middleware.js';
 
 type ParamsGetMovie = {
   movieId: string;
@@ -38,7 +39,10 @@ export default class MovieController extends Controller {
       path: '/',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateMovieDto)]
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateDtoMiddleware(CreateMovieDto)
+      ]
     });
     this.addRoute({path: '/promo', method: HttpMethod.Get, handler: this.getPromo});
     this.addRoute({
@@ -55,6 +59,7 @@ export default class MovieController extends Controller {
       method: HttpMethod.Patch,
       handler: this.update,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('movieId'),
         new ValidateDtoMiddleware(EditMovieDto),
         new DocumentExistsMiddleware(this.movieService, 'Movie', 'movieId')
@@ -65,6 +70,7 @@ export default class MovieController extends Controller {
       method: HttpMethod.Delete,
       handler: this.delete,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('movieId'),
         new DocumentExistsMiddleware(this.movieService, 'Movie', 'movieId')
       ]
@@ -105,8 +111,9 @@ export default class MovieController extends Controller {
     );
   }
 
-  public async create({body}: Request<Record<string, unknown>, Record<string, unknown>, CreateMovieDto>, res: Response): Promise<void> {
-    const result = await this.movieService.create(body);
+  public async create(req: Request<Record<string, unknown>, Record<string, unknown>, CreateMovieDto>, res: Response): Promise<void> {
+    const {body, user} = req;
+    const result = await this.movieService.create({...body, userId: user.id});
     this.created(
       res,
       fillDTO(MovieCardResponse, result)
@@ -115,6 +122,7 @@ export default class MovieController extends Controller {
 
   public async show({params}: Request<core.ParamsDictionary | ParamsGetMovie>, res: Response): Promise<void> {
     const result = await this.movieService.findById(params.movieId);
+    console.log(result);
 
     this.ok(
       res,

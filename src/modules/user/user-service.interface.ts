@@ -1,6 +1,7 @@
 import {DocumentType} from '@typegoose/typegoose';
 import CreateUserDto from './dto/create-user.dto.js';
 import {UserEntity} from './user.entity.js';
+import LoginUserDto from './dto/login-user.dto.js';
 
 export interface UserServiceInterface {
   create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>>;
@@ -11,4 +12,5 @@ export interface UserServiceInterface {
   addFavorite(userId: string, movieId: string): Promise<void | null>;
   removeFavorite(userId: string, movieId: string): Promise<void | null>;
   exists(userId: string): Promise<boolean>;
+  verifyUser(dto: LoginUserDto, salt: string): Promise<DocumentType<UserEntity> | null>;
 }
