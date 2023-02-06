@@ -4,6 +4,7 @@ import CreateMovieDto from './dto/create-movie.dto.js';
 import EditMovieDto from './dto/edit-movie.dto.js';
 import {DocumentType, types} from '@typegoose/typegoose';
 import {MovieEntity} from './movie.entity.js';
+import { UserEntity } from '../user/user.entity.js';
 import {Component} from '../../types/component.type.js';
 import {LoggerInterface} from '../../common/logger/logger.interface.js';
 import {DEFAULT_MOVIE_COUNT} from './movie.constant.js';
@@ -14,7 +15,8 @@ import mongoose from 'mongoose';
 export default class MovieService implements MovieServiceInterface {
   constructor(
     @inject(Component.LoggerInterface) private readonly logger: LoggerInterface,
-    @inject(Component.MovieModel) private readonly movieModel: types.ModelType<MovieEntity>
+    @inject(Component.MovieModel) private readonly movieModel: types.ModelType<MovieEntity>,
+    @inject(Component.UserModel) private readonly userModel: types.ModelType<UserEntity>
   ) {}
 
   public async create(dto: CreateMovieDto): Promise<DocumentType<MovieEntity>> {
@@ -25,7 +27,20 @@ export default class MovieService implements MovieServiceInterface {
       .populate(['userId']);
   }
 
-  public async findById(movieId: string): Promise<DocumentType<MovieEntity>[] | null> {
+  public async findById(movieId: string, userId?: string): Promise<DocumentType<MovieEntity>[] | null> {
+    const userData = !userId ? null :
+      await this.userModel
+        .aggregate([
+          {
+            $match: { '_id': new mongoose.Types.ObjectId(userId) },
+          },
+          {
+            $project: {'_id': 0, 'favorites': 1}
+          },
+        ]).exec();
+
+    const favorites = !userData ? [] : userData[0].favorites;
+
     return this.movieModel
       .aggregate([
         {
@@ -41,7 +56,12 @@ export default class MovieService implements MovieServiceInterface {
         },
         {
           $addFields:
-          { rating: {$avg: '$commentData.rating'}, comments: { $size: '$commentData'}}
+          {
+            id: { $toString: '$_id'},
+            rating: {$avg: '$commentData.rating'},
+            comments: { $size: '$commentData'},
+            isFavorite: {$in: ['$_id', favorites]}
+          }
         },
         {
           $lookup: {
@@ -71,7 +91,7 @@ export default class MovieService implements MovieServiceInterface {
         },
         {
           $addFields:
-        { rating: {$avg: '$commentData.rating'}, comments: { $size: '$commentData'}}
+        { id: { $toString: '$_id'}, comments: { $size: '$commentData'}}
         },
         {
           $lookup: {
@@ -123,7 +143,7 @@ export default class MovieService implements MovieServiceInterface {
         },
         {
           $addFields:
-      { rating: {$avg: '$commentData.rating'}, comments: { $size: '$commentData'}}
+      { id: { $toString: '$_id'}, comments: { $size: '$commentData'}}
         },
         {
           $lookup: {

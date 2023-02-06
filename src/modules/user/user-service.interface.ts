@@ -9,8 +9,7 @@ export interface UserServiceInterface {
   findByEmail(email: string): Promise<DocumentType<UserEntity> | null>;
   findById(userId: string): Promise<DocumentType<UserEntity> | null>;
   findFavorites(userId: string): Promise<DocumentType<UserEntity>[] | null>;
-  addFavorite(userId: string, movieId: string): Promise<void | null>;
-  removeFavorite(userId: string, movieId: string): Promise<void | null>;
+  changeFavoriteStatus(userId: string, movieId: string, status: number): Promise<void | null>;
   exists(userId: string): Promise<boolean>;
   verifyUser(dto: LoginUserDto, salt: string): Promise<DocumentType<UserEntity> | null>;
 }

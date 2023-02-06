@@ -1,18 +1,21 @@
 import {inject, injectable} from 'inversify';
 import {DocumentType, types} from '@typegoose/typegoose';
 import {UserEntity} from './user.entity.js';
+import { MovieEntity } from '../movie/movie.entity.js';
 import CreateUserDto from './dto/create-user.dto.js';
 import {UserServiceInterface} from './user-service.interface.js';
 import {LoggerInterface} from '../../common/logger/logger.interface.js';
 import {Component} from '../../types/component.type.js';
 import LoginUserDto from './dto/login-user.dto.js';
+import { FavoriteStatus } from './user.constant.js';
 import mongoose from 'mongoose';
 
 @injectable()
 export default class UserService implements UserServiceInterface {
   constructor(
         @inject(Component.LoggerInterface) private logger: LoggerInterface,
-        @inject(Component.UserModel) private readonly userModel: types.ModelType<UserEntity>
+        @inject(Component.UserModel) private readonly userModel: types.ModelType<UserEntity>,
+        @inject(Component.MovieModel) private readonly movieModel: types.ModelType<MovieEntity>,
   ) {}
 
   public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
@@ -61,21 +64,27 @@ export default class UserService implements UserServiceInterface {
           },
         },
         {
+          $lookup: {
+            from: 'comments',
+            localField: 'favorites',
+            foreignField: 'movieId',
+            as: 'commentData'
+          }
+        },
+        {
           $unwind: '$movie'
         },
         {
           $addFields: {
+            id: { $toString: '$movie._id'},
             title: '$movie.title',
             postDate: '$movie.postDate',
             genre: '$movie.genre',
             preview: '$movie.previews',
             user: '$movie.userId',
             poster: '$movie.poster',
-            comments: '$movie.comments'
+            comments: { $size: '$commentData'}
           }
-        },
-        {
-          $project: {'_id': 0, 'name': 0, 'email': 0, 'avatar': 0, 'password': 0, 'createdAt': 0, 'updatedAt': 0, 'favorites': 0, 'movie': 0}
         },
         {
           $lookup: {
@@ -91,14 +100,29 @@ export default class UserService implements UserServiceInterface {
       ]);
   }
 
-  public async addFavorite(userId: string, movieId: string): Promise<void | null> {
-    return this.userModel.findByIdAndUpdate(userId,
-      {
-        $push: {favorites: new mongoose.Types.ObjectId(movieId)}
-      });
-  }
+  public async changeFavoriteStatus(userId: string, movieId: string, status: number): Promise<void | null> {
 
-  public async removeFavorite(userId: string, movieId: string): Promise<void | null> {
+    if (status === FavoriteStatus.Positive) {
+      await this.movieModel.findByIdAndUpdate(movieId,
+        {
+          $set: {isFavorite: Boolean(FavoriteStatus.Positive)},
+        },
+        { new: true }
+      );
+
+      return this.userModel.findByIdAndUpdate(userId,
+        {
+          $push: {favorites: new mongoose.Types.ObjectId(movieId)}
+        });
+    }
+
+    await this.movieModel.findByIdAndUpdate(movieId,
+      {
+        $set: {isFavorite: Boolean(FavoriteStatus.Negative)},
+      },
+      { new: true }
+    );
+
     return this.userModel.findByIdAndUpdate(userId,
       {
         $pull: {favorites: new mongoose.Types.ObjectId(movieId)}

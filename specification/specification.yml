@@ -48,6 +48,8 @@ paths:
         "401":
           description: Пользователь не авторизован.
 
+    
+  /movies/?limit=60&genre=Romance:
     get:
       tags:
         - movies
@@ -55,12 +57,19 @@ paths:
       description: Возвращает массив фильмов. Каждый фильм описан в виде объекта.
 
       parameters:
-        - name: quantity
+        - name: limit
           in: query
-          description: Количество фильмов, которые возвращает сервис.
+          description: Количество фильмов, которые возвращает сервис, по умолчанию 60.
           schema:
             type: number
             example: 60
+
+        - name: genre
+          in: query
+          description: Список фильмов определённого жанра.
+          schema:
+            type: string
+            example: Romance
 
       responses:
         "200":
@@ -135,21 +144,6 @@ paths:
         "403":
           description: Нет доступа.
   
-  /movies/genre:
-    get:
-      tags:
-        - movies
-      summary: Получение списка фильмов определённого жанра
-      description: Возвращает массив фильмов. Каждый фильм описан в виде объекта.
-  
-      responses:
-        "200":
-          description: Массив фильмов.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/movies'  
-
   /movies/promo:
     get:
       tags:
@@ -165,59 +159,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/movie'     
 
-  /favorites/{movieId}/{status}:
-    post:
-      tags:
-        - movies
-      summary: Добавление нового фильма
-      description: Возвращает фильм с идентификатором movieId с актуальным состоянием поля isFavorite в виде объекта.
-
-      parameters:
-        - name: movieId
-          in: path
-          description: Уникальный идентификатор фильма
-          required: true
-          schema:
-            type: number
-            example: 1
-
-        - name: status
-          in: path
-          description: Статус фильма. Может быть 1 или 0, где 1 добавляет фильма в список «к просмотру», а 0 удаляет
-          required: true
-          schema:
-            type: number
-            example: 1
-    
-      responses:
-        "200":
-          description: Объект фильма.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/movie"
-
-        "401":
-          description: Пользователь не авторизован. 
-
-  /favorites:
-    get:
-      tags:
-        - movies
-      summary: Получение списка фильмов «к просмотру»
-      description: Возвращает массив фильмов, добавленных в список «к просмотру». Каждый фильм описан в виде объекта.
-
-      responses:
-        "200":
-          description: Массив фильмов, добавленных в список «к просмотру».
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/movies"
-
-        "401":
-          description: Пользователь не авторизован.
-  
   /comments/{movieId}:
     post:
       tags:
@@ -271,7 +212,7 @@ paths:
     
       responses:
         "200":
-          description: Массив комментариев. 
+          description: Список комментариев, не более 50.
           content:
             application/json:
               schema:
@@ -345,6 +286,59 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/authorizedUser"
+
+        "401":
+          description: Пользователь не авторизован.
+  
+  /users/favorites/{movieId}/{status}:
+    post:
+      tags:
+        - movies
+      summary: Добавление нового фильма
+      description: Возвращает фильм с идентификатором movieId с актуальным состоянием поля isFavorite в виде объекта.
+
+      parameters:
+        - name: movieId
+          in: path
+          description: Уникальный идентификатор фильма
+          required: true
+          schema:
+            type: number
+            example: 1
+
+        - name: status
+          in: path
+          description: Статус фильма. Может быть 1 или 0, где 1 добавляет фильма в список «к просмотру», а 0 удаляет
+          required: true
+          schema:
+            type: number
+            example: 1
+    
+      responses:
+        "200":
+          description: Объект фильма.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/movie"
+
+        "401":
+          description: Пользователь не авторизован. 
+
+  /users/favorites:
+    get:
+      tags:
+        - movies
+      summary: Получение списка фильмов «к просмотру»
+      description: Возвращает массив фильмов, добавленных в список «к просмотру». Каждый фильм описан в виде объекта.
+
+      responses:
+        "200":
+          description: Массив фильмов, добавленных в список «к просмотру».
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/movies"
 
         "401":
           description: Пользователь не авторизован.

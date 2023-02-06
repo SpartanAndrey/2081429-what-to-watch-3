@@ -55,15 +55,9 @@ export default class UserController extends Controller {
       middlewares:[new PrivateRouteMiddleware()]
     });
     this.addRoute({
-      path: '/favorites',
+      path: '/favorites/:movieId/:status',
       method: HttpMethod.Post,
-      handler: this.addFavorite,
-      middlewares:[new PrivateRouteMiddleware()]
-    });
-    this.addRoute({
-      path: '/favorites',
-      method: HttpMethod.Delete,
-      handler: this.removeFavorite,
+      handler: this.changeStatus,
       middlewares:[new PrivateRouteMiddleware()]
     });
     this.addRoute({
@@ -120,10 +114,6 @@ export default class UserController extends Controller {
   public async checkAuthenticate(req: Request, res: Response) {
     const user = await this.userService.findByEmail(req.user.email);
 
-    // Можно добавить проверку, что `findByEmail` действительно
-    // находит пользователя в базе. Если пользователи не удаляются,
-    // проверки можно избежать.
-
     this.ok(res, fillDTO(LoggedUserResponse, user));
   }
 
@@ -136,18 +126,9 @@ export default class UserController extends Controller {
     );
   }
 
-  public async addFavorite(req: Request, res: Response): Promise<void> {
-    const {body, user} = req;
-    await this.userService.addFavorite(user.id, body.movieId);
-    this.ok(
-      res,
-      []
-    );
-  }
-
-  public async removeFavorite(req: Request, res: Response): Promise<void> {
-    const {body, user} = req;
-    await this.userService.removeFavorite(user.id, body.movieId);
+  public async changeStatus(req: Request, res: Response): Promise<void> {
+    const {params, user} = req;
+    await this.userService.changeFavoriteStatus(user.id, params.movieId, parseInt(params.status, 10));
     this.ok(
       res,
       []

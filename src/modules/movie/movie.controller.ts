@@ -120,13 +120,13 @@ export default class MovieController extends Controller {
     );
   }
 
-  public async show({params}: Request<core.ParamsDictionary | ParamsGetMovie>, res: Response): Promise<void> {
-    const result = await this.movieService.findById(params.movieId);
-    console.log(result);
+  public async show({params, user}: Request<core.ParamsDictionary | ParamsGetMovie>, res: Response): Promise<void> {
+
+    const result = await this.movieService.findById(params.movieId, user?.id);
 
     this.ok(
       res,
-      fillDTO(MovieCardResponse, result) //WIP incorrect id
+      fillDTO(MovieCardResponse, result)
     );
   }
 
