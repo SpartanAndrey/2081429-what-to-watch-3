@@ -20,7 +20,7 @@ export default class MovieResponse {
   @Expose()
   public comments!: number;
 
-  @Expose({ name: 'userId'})
+  @Expose()
   @Type(() => UserResponse)
   public user!: UserResponse;
 

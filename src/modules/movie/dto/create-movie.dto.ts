@@ -1,4 +1,4 @@
-import {IsArray, IsDateString, IsEnum, IsInt, IsMongoId, MaxLength, MinLength, IsString, Length} from 'class-validator';
+import {IsArray, IsDateString, IsEnum, IsInt, MaxLength, MinLength, IsString, Length} from 'class-validator';
 import { Genres } from '../../../types/genre.type.js';
 
 export default class CreateMovieDto {
@@ -35,7 +35,6 @@ export default class CreateMovieDto {
   @IsInt({message: 'duration must be an integer'})
   public duration!: number;
 
-  @IsMongoId({message: 'userId field must be valid an id'})
   public userId!: string;
 
   @IsString({message: 'poster must be a string'})

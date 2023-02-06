@@ -8,7 +8,7 @@ import CreateUserDto from './dto/create-user.dto.js';
 import {UserServiceInterface} from './user-service.interface.js';
 import HttpError from '../../common/errors/http-error.js';
 import {StatusCodes} from 'http-status-codes';
-import {fillDTO} from '../../utils/common.js';
+import {createJWT, fillDTO} from '../../utils/common.js';
 import UserResponse from './response/user.response.js';
 import {ConfigInterface} from '../../common/config/config.interface.js';
 import LoginUserDto from './dto/login-user.dto.js';
@@ -17,6 +17,9 @@ import {ValidateDtoMiddleware} from '../../common/middlewares/validate-dto.middl
 import {ValidateObjectIdMiddleware} from '../../common/middlewares/validate-objectid.middleware.js';
 import {UploadFileMiddleware} from '../../common/middlewares/upload-file.middleware.js';
 import {DocumentExistsMiddleware} from '../../common/middlewares/document-exists.middleware.js';
+import LoggedUserResponse from './response/logged-user.response.js';
+import {JWT_ALGORITM} from './user.constant.js';
+import {PrivateRouteMiddleware} from '../../common/middlewares/private-route.middleware.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -40,9 +43,23 @@ export default class UserController extends Controller {
       handler: this.login,
       middlewares: [new ValidateDtoMiddleware(LoginUserDto)]
     });
-    this.addRoute({path: '/favorites/:userId', method: HttpMethod.Get, handler: this.getFavorites});
-    this.addRoute({path: '/favorites/:userId', method: HttpMethod.Post, handler: this.addFavorite});
-    this.addRoute({path: '/favorites/:userId', method: HttpMethod.Delete, handler: this.removeFavorite});
+    this.addRoute({
+      path: '/login',
+      method: HttpMethod.Get,
+      handler: this.checkAuthenticate
+    });
+    this.addRoute({
+      path: '/favorites',
+      method: HttpMethod.Get,
+      handler: this.getFavorites,
+      middlewares:[new PrivateRouteMiddleware()]
+    });
+    this.addRoute({
+      path: '/favorites/:movieId/:status',
+      method: HttpMethod.Post,
+      handler: this.changeStatus,
+      middlewares:[new PrivateRouteMiddleware()]
+    });
     this.addRoute({
       path: '/:userId/avatar',
       method: HttpMethod.Post,
@@ -74,43 +91,44 @@ export default class UserController extends Controller {
     );
   }
 
-  public async login(
-    {body}: Request<Record<string, unknown>, Record<string, unknown>, LoginUserDto>, _res: Response): Promise<void> {
-    const existsUser = await this.userService.findByEmail(body.email);
+  public async login({body}: Request<Record<string, unknown>, Record<string, unknown>, LoginUserDto>, res: Response): Promise<void> {
+    const user = await this.userService.verifyUser(body, this.configService.get('SALT'));
 
-    if (!existsUser) {
+    if (!user) {
       throw new HttpError(
         StatusCodes.UNAUTHORIZED,
-        `User with email ${body.email} not found.`,
-        'UserController',
+        'Unauthorized',
+        'UserController'
       );
     }
 
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'Not implemented',
-      'UserController',
+    const token = await createJWT(
+      JWT_ALGORITM,
+      this.configService.get('JWT_SECRET'),
+      { email: user.email, id: user.id}
     );
+
+    this.ok(res, fillDTO(LoggedUserResponse, {email: user.email, token}));
   }
 
-  public async getFavorites({params}: Request, res: Response): Promise<void> {
-    const result = await this.userService.findFavorites(params.userId);
+  public async checkAuthenticate(req: Request, res: Response) {
+    const user = await this.userService.findByEmail(req.user.email);
+
+    this.ok(res, fillDTO(LoggedUserResponse, user));
+  }
+
+  public async getFavorites(req: Request, res: Response): Promise<void> {
+    const {user} = req;
+    const result = await this.userService.findFavorites(user.id);
     this.ok(
       res,
       fillDTO(MovieResponse, result)
     );
   }
 
-  public async addFavorite({body, params}: Request, res: Response): Promise<void> {
-    await this.userService.addFavorite(params.userId, body.movieId);
-    this.ok(
-      res,
-      []
-    );
-  }
-
-  public async removeFavorite({body, params}: Request, res: Response): Promise<void> {
-    await this.userService.removeFavorite(params.userId, body.movieId);
+  public async changeStatus(req: Request, res: Response): Promise<void> {
+    const {params, user} = req;
+    await this.userService.changeFavoriteStatus(user.id, params.movieId, parseInt(params.status, 10));
     this.ok(
       res,
       []
