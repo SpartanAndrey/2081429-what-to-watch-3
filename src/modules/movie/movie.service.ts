@@ -189,13 +189,6 @@ export default class MovieService implements MovieServiceInterface {
       ]);
   }
 
-  public async incCommentCount(movieId: string): Promise<DocumentType<MovieEntity> | null> {
-    return this.movieModel
-      .findByIdAndUpdate(movieId, {'$inc': {
-        commentCount: 1,
-      }}).exec();
-  }
-
   public async exists(movieId: string): Promise<boolean> {
     return (await this.movieModel
       .exists({_id: movieId})) !== null;

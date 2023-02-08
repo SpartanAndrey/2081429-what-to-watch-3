@@ -3,11 +3,13 @@ import {DocumentType, types} from '@typegoose/typegoose';
 import {UserEntity} from './user.entity.js';
 import { MovieEntity } from '../movie/movie.entity.js';
 import CreateUserDto from './dto/create-user.dto.js';
+import UpdateUserDto from './dto/update-user.dto.js';
 import {UserServiceInterface} from './user-service.interface.js';
 import {LoggerInterface} from '../../common/logger/logger.interface.js';
 import {Component} from '../../types/component.type.js';
 import LoginUserDto from './dto/login-user.dto.js';
 import { FavoriteStatus } from './user.constant.js';
+import {DEFAULT_AVATAR_FILE_NAME} from './user.constant.js';
 import mongoose from 'mongoose';
 
 @injectable()
@@ -19,7 +21,7 @@ export default class UserService implements UserServiceInterface {
   ) {}
 
   public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
-    const user = new UserEntity(dto);
+    const user = new UserEntity({...dto, avatar: DEFAULT_AVATAR_FILE_NAME});
     user.setPassword(dto.password, salt);
 
     const result = await this.userModel.create(user);
@@ -146,5 +148,11 @@ export default class UserService implements UserServiceInterface {
     }
 
     return null;
+  }
+
+  public async updateById(userId: string, dto: UpdateUserDto): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel
+      .findByIdAndUpdate(userId, dto, {new: true})
+      .exec();
   }
 }

@@ -37,12 +37,6 @@ export default class CreateMovieDto {
 
   public userId!: string;
 
-  @IsString({message: 'poster must be a string'})
-  public poster!: string;
-
-  @IsString({message: 'background image must be a string'})
-  public backgroundImage!: string;
-
   @IsString({message: 'background color must be a string'})
   public backgroundColor!: string;
 }
