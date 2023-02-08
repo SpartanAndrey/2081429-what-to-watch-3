@@ -13,14 +13,16 @@ import {fillDTO} from '../../utils/common.js';
 import CommentResponse from './response/comment.response.js';
 import {ValidateDtoMiddleware} from '../../common/middlewares/validate-dto.middleware.js';
 import {PrivateRouteMiddleware} from '../../common/middlewares/private-route.middleware.js';
+import {ConfigInterface} from '../../common/config/config.interface.js';
 
 export default class CommentController extends Controller {
   constructor(
     @inject(Component.LoggerInterface) logger: LoggerInterface,
+    @inject(Component.ConfigInterface) configService: ConfigInterface,
     @inject(Component.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
     @inject(Component.MovieServiceInterface) private readonly movieService: MovieServiceInterface,
   ) {
-    super(logger);
+    super(logger, configService);
 
     this.logger.info('Register routes for CommentController...');
     this.addRoute({
@@ -47,7 +49,6 @@ export default class CommentController extends Controller {
     }
 
     const comment = await this.commentService.create({...body, userId: req.user.id});
-    await this.movieService.incCommentCount(body.movieId);
     this.created(res, fillDTO(CommentResponse, comment));
   }
 }

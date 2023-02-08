@@ -57,10 +57,10 @@ export class MovieEntity extends defaultClasses.TimeStamps {
   @prop({required: true})
   public poster!: string;
 
-  @prop({required: true})
+  @prop({default: '', required: true})
   public backgroundImage!: string;
 
-  @prop({required: true})
+  @prop({default: '', required: true})
   public backgroundColor!: string;
 
   @prop({default: false})

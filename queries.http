@@ -91,6 +91,20 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im1pc3RlcnR3aXN0ZXJAZ21ha
 
 ###
 
+## Загрузка постера для фильма
+POST http://localhost:5000/movies/63c29007cdb71a70b34f9f2b/poster HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im1pc3RlcnR3aXN0ZXJAZ21haWwuY29tIiwiaWQiOiI2M2RlMWMwYzkwMTExZWNiYjE3ZmQ5MzYiLCJpYXQiOjE2NzU4NzIxMzQsImV4cCI6MTY3NjA0NDkzNH0.x7TfRZOAiAgKeti1Hk45M8GAB-OR6dMygaOme8GSqs8
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="poster"; filename="the-grand-budapest-hotel-poster.jpg"
+Content-Type: image/jpg
+
+< ./markup/img/the-grand-budapest-hotel-poster.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
 # Пользователи
 ## Регистрация пользователя
 
