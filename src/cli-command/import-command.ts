@@ -32,8 +32,8 @@ export default class ImportCommand implements CliCommandInterface {
     this.onComplete = this.onComplete.bind(this);
 
     this.logger = new ConsoleLoggerService();
-    this.movieService = new MovieService(this.logger, MovieModel);
-    this.userService = new UserService(this.logger, UserModel);
+    this.movieService = new MovieService(this.logger, MovieModel, this.userService);
+    this.userService = new UserService(this.logger, UserModel, this.movieService);
     this.databaseService = new DatabaseService(this.logger);
   }
 
