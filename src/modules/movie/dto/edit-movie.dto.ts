@@ -1,4 +1,4 @@
-import {IsArray, IsDateString, IsEnum, IsInt, MaxLength, MinLength, IsString, IsOptional, Length} from 'class-validator';
+import {IsArray, IsDateString, IsEnum, IsInt, MaxLength, MinLength, IsString, IsOptional, Length, Matches} from 'class-validator';
 import { Genres } from '../../../types/genre.type.js';
 
 export default class EditMovieDto {
@@ -47,10 +47,12 @@ export default class EditMovieDto {
 
   @IsOptional()
   @IsString({message: 'poster must be a string'})
+  @Matches(/(\S+(\.jpg|png)$)/, {message: 'poster extension must be jpg or png'})
   public poster?: string;
 
   @IsOptional()
   @IsString({message: 'background image must be a string'})
+  @Matches(/(\S+(\.jpg|png)$)/, {message: 'backgroundImage extension must be jpg or png'})
   public backgroundImage?: string;
 
   @IsOptional()

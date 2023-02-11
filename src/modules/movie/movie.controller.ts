@@ -22,6 +22,8 @@ import {ConfigInterface} from '../../common/config/config.interface.js';
 import {UploadFileMiddleware} from '../../common/middlewares/upload-file.middleware.js';
 import UploadImageResponse from './response/upload-image.response.js';
 import UploadPosterResponse from './response/upload-poster.response.js';
+import { StatusCodes } from 'http-status-codes';
+import HttpError from '../../common/errors/http-error.js';
 
 type ParamsGetMovie = {
   movieId: string;
@@ -155,7 +157,21 @@ export default class MovieController extends Controller {
     );
   }
 
-  public async update({body, params}:Request<core.ParamsDictionary | ParamsGetMovie, Record<string, unknown>, EditMovieDto>, res: Response): Promise<void> {
+  public async update(req: Request<core.ParamsDictionary | ParamsGetMovie, Record<string, unknown>, EditMovieDto>, res: Response): Promise<void> {
+
+    const {body, params, user} = req;
+
+    const movie = await this.movieService.findById(params.movieId);
+    const currentMovie = movie ? movie[0] : null;
+    const currentUser = currentMovie?.userId;
+
+    if (user.id !== currentUser?.toString()) {
+      throw new HttpError(
+        StatusCodes.FORBIDDEN,
+        'You are\'t author of this movie.',
+        'MovieController'
+      );
+    }
 
     const result = await this.movieService.editById(params.movieId, body);
     this.created(
@@ -164,7 +180,21 @@ export default class MovieController extends Controller {
     );
   }
 
-  public async delete({params}: Request, res: Response): Promise<void> {
+  public async delete(req: Request, res: Response): Promise<void> {
+
+    const {params, user} = req;
+
+    const movie = await this.movieService.findById(params.movieId);
+    const currentMovie = movie ? movie[0] : null;
+    const currentUser = currentMovie?.userId;
+
+    if (user.id !== currentUser?.toString()) {
+      throw new HttpError(
+        StatusCodes.FORBIDDEN,
+        'You are\'t author of this movie.',
+        'MovieController'
+      );
+    }
 
     await this.movieService.deleteById(params.movieId);
     this.noContent(
