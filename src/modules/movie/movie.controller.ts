@@ -196,9 +196,12 @@ export default class MovieController extends Controller {
       );
     }
 
-    await this.movieService.deleteById(params.movieId);
+    await this.commentService.deleteByMovieId(params.filmId);
+
+    const result = await this.movieService.deleteById(params.movieId);
     this.noContent(
-      res
+      res,
+      result
     );
   }
 

@@ -50,6 +50,11 @@ export default class UserController extends Controller {
       handler: this.checkAuthenticate
     });
     this.addRoute({
+      path: '/logout',
+      method: HttpMethod.Delete,
+      handler: this.logout
+    });
+    this.addRoute({
       path: '/favorites',
       method: HttpMethod.Get,
       handler: this.getFavorites,
@@ -113,6 +118,14 @@ export default class UserController extends Controller {
       ...fillDTO(LoggedUserResponse, user),
       token
     });
+  }
+
+  public async logout() {
+    throw new HttpError(
+      StatusCodes.NOT_IMPLEMENTED,
+      'Not implemented',
+      'UserController'
+    );
   }
 
   public async checkAuthenticate(req: Request, res: Response) {
